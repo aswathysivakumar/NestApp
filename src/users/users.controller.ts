@@ -6,7 +6,7 @@ export class UsersController {
 
 	constructor(private readonly usersService: UsersService) {}
 
-  @Get()
+  @Get() // /users
 	findAll() {
 		const isConditionMet = true
 
