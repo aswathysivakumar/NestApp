@@ -1,34 +1,29 @@
-import { Injectable, HttpStatus } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { DatabaseService } from 'src/database/database.service';
 
 @Injectable()
 export class UsersService {
-	private users = [
-		{ id: 1,
-			name: 'test',
-			email: 'test@gmail.com'
-		},
-		{ id: 2,
-			name: 'test1',
-			email: 'test1@gmail.com'
-		},
-	]
-	findAll() {
-		const isConditionMet = true
+  constructor(private readonly databaseService: DatabaseService) {}
 
-		if (isConditionMet) {
-      return {
-        data: { value: this.users },
-        message: "Data returned successfully",
-        statusCode: HttpStatus.OK,
-        status: "success",
-      };
-    } else {
-      return {
-        data: {},
-        message: "Something went wrong",
-        statusCode: HttpStatus.BAD_REQUEST,
-        status: "fail",
-      };
-    }
-	}
+	async findAll(role?: 'INTERN' | 'ADMIN') {
+		if (role) return this.databaseService.user.findMany({ where: { role, }})
+    return this.databaseService.user.findMany()
+  }
+
+  async findOne(id: number){
+    return this.databaseService.user.findUnique({ where: { id, }})
+  }
+
+  async create(createUserDto: Prisma.UserCreateInput) {
+    return this.databaseService.user.create({ data: createUserDto })
+  }
+
+  async update(id: number, updateUserDto: Prisma.UserUpdateInput) {
+    return this.databaseService.user.update({ where: { id, }, data: updateUserDto})
+  }
+
+  async remove(id: number) {
+    return this.databaseService.user.delete({ where: { id, }})
+  }
 }
