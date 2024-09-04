@@ -1,6 +1,6 @@
 import { Controller, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiForbiddenResponse, ApiOkResponse, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 import { SignupDto } from './dto/signUp.dto';
 import { LoginDto } from './dto/login.dto'; 
@@ -18,13 +18,17 @@ export class AuthController {
   async signUp(@Body() signUpData: SignupDto){ 
     return this.authService.signup(signUpData)
   }
-
-  @Post('login') // auth/signup
+  
+  @ApiCreatedResponse({ description: 'User logged in successfully'})
+  @ApiUnauthorizedResponse({ description: 'User cannot be logged in' })
+  @Post('login') // auth/login
   async login(@Body() credentials: LoginDto){ 
     return this.authService.login(credentials)
   }
 
-  @Post('refreshToken') // auth/signup
+  @ApiCreatedResponse({ description: 'Token refreshed successfully'})
+  @ApiUnauthorizedResponse({ description: 'Token cannot be refreshed' })
+  @Post('refreshToken') // auth/refreshToken
   async refreshToken(@Body() refteshTokenDto: refreshTokenDto){ 
     return this.authService.refreshToken(refteshTokenDto)
   }

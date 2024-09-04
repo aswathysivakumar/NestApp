@@ -15,7 +15,8 @@ export class AuthService {
 		const emailInUse = await this.user.findWithEmail(email)
 		if (emailInUse) throw new BadRequestException("Email already exists")
 		const hashedPassword = await bcrypt.hash(password, 10)
-	  await this.user.create({ name, email, password: hashedPassword, role: role });
+	  const user = await this.user.create({ name, email, password: hashedPassword, role: role });
+		return {id: user.id, name: user.name, email: user.email, role: user.role}
 	}
 
 	async login(credentials) {
