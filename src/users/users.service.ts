@@ -15,6 +15,14 @@ export class UsersService {
     return this.databaseService.user.findUnique({ where: { id, }})
   }
 
+  async findWithEmail(email: string){
+    return this.databaseService.user.findFirst({ where: { email, }})
+  }
+
+  async findWithToken(refreshToken: string){
+    return this.databaseService.user.findFirst({ where: { refreshToken, tokenExpiryDate: { gte: new Date() }}})
+  }
+
   async create(createUserDto: Prisma.UserCreateInput) {
     return this.databaseService.user.create({ data: createUserDto })
   }

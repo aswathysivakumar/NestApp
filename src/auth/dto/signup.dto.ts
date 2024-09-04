@@ -1,7 +1,7 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString } from "class-validator";
+import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator";
 import { ApiProperty, ApiResponseProperty } from "@nestjs/swagger";
 
-export class CreateUserDto {
+export class SignupDto {
   @ApiResponseProperty({
     example: 1
   })
@@ -26,13 +26,15 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: 'The password to login for the user',
-    example: 'Abc1234#'
+    example: 'Abc1234#',
+    writeOnly: true
   })
   
   @IsNotEmpty()
   @IsString()
+  @MinLength(8)
   password: string;
-  
+
   @ApiProperty({
     description: 'The role of User',
     example: 'INTERN OR ADMIN'

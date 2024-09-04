@@ -6,6 +6,10 @@ import { DatabaseModule } from './database/database.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { MyLoggerModule } from './my-logger/my-logger.module';
+import { AuthModule } from './auth/auth.module';
+import { JwtModule } from '@nestjs/jwt';
+
+import * as fs from 'fs';
 
 @Module({
   imports: [UsersModule, DatabaseModule, ThrottlerModule.forRoot([{
@@ -18,7 +22,12 @@ import { MyLoggerModule } from './my-logger/my-logger.module';
     ttl: 60000,
     limit: 100
   }
-]), MyLoggerModule],
+  ]), MyLoggerModule, AuthModule, 
+  JwtModule.register({ 
+    privateKey: fs.readFileSync('./certificates/private.key'),
+    publicKey: fs.readFileSync('./certificates/public.key'),
+    signOptions: { expiresIn: '1h', algorithm: 'RS256' }, 
+    global: true })],
   controllers: [AppController],
   providers: [AppService, { provide: APP_GUARD, useClass: ThrottlerGuard, }],
 })
