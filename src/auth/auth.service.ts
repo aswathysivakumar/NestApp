@@ -37,12 +37,12 @@ export class AuthService {
     if (!user) throw new UnauthorizedException("User doesn't exist");
     const passwordMatch = await bcrypt.compare(password, user.password);
     if (!passwordMatch) throw new UnauthorizedException('Wrong password!');
-    const token = await this.generateUserTokens(user.id);
-    return { ...token, userId: user.id };
+    const token = await this.generateUserTokens(user.id, user.role);
+    return { ...token, userId: user.id, roles: [user.role] };
   }
 
-  async generateUserTokens(userId) {
-    const accessToken = this.jwtService.sign({ userId });
+  async generateUserTokens(userId, role) {
+    const accessToken = this.jwtService.sign({ userId, roles: role });
     const refreshToken = uuidv4();
     const tokenExpiryDate = new Date();
     tokenExpiryDate.setDate(tokenExpiryDate.getDate() + 3);
@@ -54,6 +54,6 @@ export class AuthService {
     const { refreshToken } = refreshTokenDto;
     const token = await this.user.findWithToken(refreshToken);
     if (!token) throw new UnauthorizedException('Refresh Token is invalid');
-    return this.generateUserTokens(token.id);
+    return this.generateUserTokens(token.id, token.role);
   }
 }
